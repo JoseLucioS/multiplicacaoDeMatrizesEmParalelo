@@ -4,12 +4,37 @@
 
 /*Esse programa realiza a multiplicacao das matrizes de forma sequencial*/
 
-void preencherMatriz(int** matriz, int tam_linhas, int tam_colunas){
+void alocarMatriz(int **matriz, int tam_linhas, int tam_colunas){
+	matriz = (int**) malloc(tam_linhas * sizeof(int*));
+	for(int i = 0; i < tam_linhas; i++){
+		matriz[i] = (int*) malloc(tam_colunas * sizeof(int));
+		printf("alocando... %d\n", i);
+	}
+}
+
+void preencherMatriz(int **matriz, int tam_linhas, int tam_colunas){
 	for(int i = 0; i < tam_linhas; i++){
 		for(int j = 0; j < tam_colunas; j++){
-			matriz[i][j] = rand() % 100
+			matriz[i][j] = rand() % 100;
 		}
 	}
+}
+
+void imprimirMatriz(int **matriz, int tam_linhas, int tam_colunas){
+	for(int i = 0; i < tam_linhas; i++){
+		for(int j = 0; j < tam_colunas; j++){
+			printf("%d ", matriz[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void liberarMatriz(int **matriz, int tam_linhas, int tam_colunas){
+	for (int i = 0; i < tam_linhas; i++)
+	{
+		free(matriz[i]);
+	}
+	free(matriz);
 }
 
 int main(int argc, char const *argv[])
@@ -21,35 +46,43 @@ int main(int argc, char const *argv[])
 	int linhas_matriz_2 = atoi(argv[3]);
 	int colunas_matriz_2 = atoi(argv[4]);
 
-	int** matriz_um, matriz_dois;
+	int** matriz_um; 
+	int** matriz_dois;
 
 	//verificar se a multiplicacao entre as matrizes eh permitida
 	//se nao for, mostrar uma mensagem e encerrar o programa
 	if(colunas_matriz_1 != linhas_matriz_2){
 		printf("Impossivel multiplicar essas matrizes\n");
+		exit(0);
 	} else {
 		//alocar espaco para as matrizes
+		alocarMatriz(matriz_um, linhas_matriz_1, colunas_matriz_1);
+		alocarMatriz(matriz_dois, linhas_matriz_2, colunas_matriz_2);
 
-		//alocando para a matriz um
-		matriz_um = (int**) malloc(linhas_matriz_1 * sizeof(int*));
-		for(int i = 0; i < linhas_matriz_1; i++){
-			matriz_um[i] = (int*) malloc(colunas_matriz_1 * sizeof(int));
-		}
+		//preencher cada uma das matrizes usando numeros aleatorios
+		//preencherMatriz(matriz_um, linhas_matriz_1, colunas_matriz_1);
+		//preencherMatriz(matriz_dois, linhas_matriz_2, colunas_matriz_2);
 
-		//alocando para a matriz dois
-		matriz_dois = (int**) malloc(linhas_matriz_2 * sizeof(int*));
-		for(int i = 0; i < linhas_matriz_2; i++){
-			matriz_dois[i] = (int*) malloc(colunas_matriz_2 * sizeof(int));
-		}
-	}
-	//preencher cada uma das matrizes usando numeros aleatorios
+		//testando
+		/*printf("Matriz um...\n");
+		imprimirMatriz(matriz_um, linhas_matriz_1, colunas_matriz_1);
+		printf("\n\n");
+		printf("Matriz dois...\n");
+		imprimirMatriz(matriz_dois, linhas_matriz_2, colunas_matriz_2); */
 
-	//realizar a multiplicacao
+		//realizar a multiplicacao
+		//clock_t inicio = clock();
 
-	//liberar a memoria alocada para as matrizes
+		//clock_t fim = clock();
+		//double tempo_gasto = (double) (fim - inicio) / CLOCKS_PER_SEC;
+
+		//liberar a memoria alocada para as matrizes
+		//liberarMatriz(matriz_um, linhas_matriz_1, colunas_matriz_1);
+		//liberarMatriz(matriz_dois, linhas_matriz_2, colunas_matriz_2);
+
+		//imprimir o tempo que se passou para a multiplicacao
 	
-
-	//imprimir o tempo que se passou para a multiplicacao
-
+	}
+	
 	return 0;
 }
