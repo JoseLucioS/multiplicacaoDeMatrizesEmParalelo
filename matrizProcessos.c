@@ -1,12 +1,131 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 /*Esse programa realiza a multiplicacao das matrizes atraves de processos*/
 
+//variaveis globais
+int LINHAS_MATRIZ_UM;
+int COLUNAS_MATRIZ_UM;
+int LINHAS_MATRIZ_DOIS;
+int COLUNAS_MATRIZ_DOIS;
 
+void multiplicarMatrizes(int** matriz_um, int** matriz_dois, int** matriz_resultado, int inicio, int fim) {
+    // Multiplica as matrizes
+    for(int i = inicio; i < fim; i++) {
+        for(int j = 0; j < COLUNAS_MATRIZ_DOIS; j++) {
+            for(int k = 0; k < COLUNAS_MATRIZ_UM; k++) {
+                matriz_resultado[i][j] += matriz_um[i][k] * matriz_dois[k][j];
+            }
+        }
+    }
+}
 
 int main(int argc, char const *argv[])
 {
-	/* code */
+	int status;
+	pid_t pid;
+
+	//Recebendo o tamanho das matrizes pela linha de comando
+	int linhas_matriz_um = atoi(argv[1]);
+	int colunas_matriz_um = atoi(argv[2]);
+	int linhas_matriz_dois = atoi(argv[3]);
+	int colunas_matriz_dois = atoi(argv[4]);
+	int P = atoi(argv[5]); //numero de processos para multiplicar as matrizes
+
+	LINHAS_MATRIZ_UM = linhas_matriz_um;
+	COLUNAS_MATRIZ_UM = colunas_matriz_dois;
+	LINHAS_MATRIZ_DOIS = linhas_matriz_dois;
+	COLUNAS_MATRIZ_DOIS = colunas_matriz_dois;
+
+	//Declarando as matrizes
+    int** matriz_um;
+    int** matriz_dois;
+    int** matriz_resultado;
+
+    //Alocando dinamicamente as matrizes
+    matriz_um = (int**) malloc(linhas_matriz_um * sizeof(int*));
+    for (int i = 0; i < linhas_matriz_um; i++) {
+        matriz_um[i] = (int*) malloc(colunas_matriz_um * sizeof(int));
+    }
+
+    matriz_dois = (int**) malloc(linhas_matriz_dois * sizeof(int*));
+    for (int i = 0; i < linhas_matriz_dois; i++) {
+        matriz_dois[i] = (int*) malloc(colunas_matriz_dois * sizeof(int));
+    }
+
+    matriz_resultado = (int**) malloc(linhas_matriz_um * sizeof(int*));
+    for (int i = 0; i < linhas_matriz_um; i++) {
+        matriz_resultado[i] = (int*) malloc(colunas_matriz_dois * sizeof(int));
+    }
+
+    //Inicializando as matrizes com números inteiros aleatorios
+  	srand(time(NULL));
+    for(int i = 0; i < linhas_matriz_um; i++) {
+        for(int j = 0; j < colunas_matriz_um; j++) {
+            matriz_um[i][j] = 1 + rand() % 10;
+        }
+    }
+
+    for(int i = 0; i < linhas_matriz_dois; i++) {
+        for(int j = 0; j < colunas_matriz_dois; j++) {
+            matriz_dois[i][j] = 1 + rand() % 10;
+        }
+    }
+
+    //Inicializando a matriz resultado com zeros
+    for(int i = 0; i < linhas_matriz_um; i++) {
+        for(int j = 0; j < colunas_matriz_dois; j++) {
+            matriz_resultado[i][j] = 0;
+        }
+    }
+
+    //Iniciando a criacao dos filhos e inicio da marcaçao de tempo
+    clock_t inicio = clock();
+    for (int i = 0; i < P; i++){
+    	pid = fork();
+
+    	if(pid < 0){
+    		printf("Erro na criaçao do filho!\n");
+    		exit(-1);
+
+    	} else if(pid == 0){
+    		
+    		int inicio = i * (LINHAS_MATRIZ_UM / P);
+    		int fim = (i + 1) * (LINHAS_MATRIZ_UM / P);
+
+    		multiplicarMatrizes(matriz_um, matriz_dois, matriz_resultado, inicio, fim);
+    	}
+    }
+
+    //Aguardando todos os processos filhos encerrarem
+    for (int i = 0; i < P; i++){
+    	wait(NULL);
+    }
+    
+
+    //Liberando a memoria alocada para cada matriz
+    for (int i = 0; i < linhas_matriz_um; i++){
+    	free(matriz_um[i]);
+    }
+    free(matriz_um);
+
+    for (int i = 0; i < linhas_matriz_dois; i++){
+    	free(matriz_dois[i]);
+    }
+    free(matriz_dois);
+
+    for (int i = 0; i < linhas_matriz_um; i++){
+    	free(matriz_resultado[i]);
+    }
+    free(matriz_resultado);
+
+    clock_t fim = clock();
+    double tempo_gasto = (double) (fim - inicio) / CLOCKS_PER_SEC; //medindo em segundos
+    printf("Tempo gasto: %2.f segundos\n", tempo_gasto);
+
 	return 0;
 }

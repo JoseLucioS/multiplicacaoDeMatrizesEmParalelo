@@ -68,9 +68,9 @@ int main(int argc, char const *argv[]) {
     multiplicarMatrizes(matriz_um, matriz_dois, matriz_resultado, linhas_matriz_um, colunas_matriz_dois, colunas_matriz_um);
     
     clock_t fim = clock();
-    double tempo_gasto = (double) (fim - inicio) / CLOCKS_PER_SEC;
+    double tempo_gasto = (double) (fim - inicio) / CLOCKS_PER_SEC * 1000; //medindo em milissegundos
 
-    printf("tempo gasto: %2.f segundos\n", tempo_gasto);
+    printf("tempo gasto: %2.f ms\n", tempo_gasto);
 
     //Liberando a memoria alocada para cada matriz
     for (int i = 0; i < linhas_matriz_um; i++){
