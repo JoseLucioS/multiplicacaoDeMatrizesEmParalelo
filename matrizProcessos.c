@@ -107,7 +107,7 @@ int main(int argc, char const *argv[])
 
     if(pid_pai_inicio == getpid()){
     	clock_t fim = clock();
-    	double tempo_gasto = (double) (fim - inicio) / CLOCKS_PER_SEC * 1000; //medindo em segundos
+    	double tempo_gasto = (double) (fim - inicio) / CLOCKS_PER_SEC * 1000; //medindo em milissegundos
     	printf("Tempo gasto: %2.f segundos\n", tempo_gasto);
     }
 
